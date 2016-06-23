@@ -61,6 +61,13 @@ angular.module("internationalPhoneNumber", [])
       else
         options[key] = option
 
+    changeCountry = (country) ->
+      if country != null && country != undefined && country != ''
+        if options.onlyCountries && options.onlyCountries.indexOf(country.toLowerCase()) == -1
+          return
+
+        element.intlTelInput("selectCountry", country)
+
     # Wait for ngModel to be set
     watchOnce = scope.$watch('ngModel', (newValue) ->
       # Wait to see if other scope variables were set at the same time
@@ -78,17 +85,12 @@ angular.module("internationalPhoneNumber", [])
         unless options.skipUtilScriptDownload || attrs.skipUtilScriptDownload != undefined || options.utilsScript
           element.intlTelInput('loadUtils', '/bower_components/intl-tel-input/lib/libphonenumber/build/utils.js')
 
+        changeCountry(scope.country)
         watchOnce()
 
     )
 
-    scope.$watch('country', (newValue) ->
-        if newValue != null && newValue != undefined && newValue != ''
-          if options.onlyCountries && options.onlyCountries.indexOf(newValue.toLowerCase()) == -1
-            return
-
-          element.intlTelInput("selectCountry", newValue)
-    )
+    scope.$watch('country', changeCountry)
 
     ctrl.$formatters.push (value) ->
       if !value

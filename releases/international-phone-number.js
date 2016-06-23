@@ -24,7 +24,7 @@
           country: '='
         },
         link: function(scope, element, attrs, ctrl) {
-          var handleWhatsSupposedToBeAnArray, options, read, watchOnce;
+          var changeCountry, handleWhatsSupposedToBeAnArray, options, read, watchOnce;
           if (ctrl) {
             if (element.val() !== '') {
               $timeout(function() {
@@ -60,6 +60,14 @@
               return options[key] = option;
             }
           });
+          changeCountry = function(country) {
+            if (country !== null && country !== void 0 && country !== '') {
+              if (options.onlyCountries && options.onlyCountries.indexOf(country.toLowerCase()) === -1) {
+                return;
+              }
+              return element.intlTelInput("selectCountry", country);
+            }
+          };
           watchOnce = scope.$watch('ngModel', function(newValue) {
             return scope.$$postDigest(function() {
               if (newValue !== null && newValue !== void 0 && newValue.length > 0) {
@@ -72,17 +80,11 @@
               if (!(options.skipUtilScriptDownload || attrs.skipUtilScriptDownload !== void 0 || options.utilsScript)) {
                 element.intlTelInput('loadUtils', '/bower_components/intl-tel-input/lib/libphonenumber/build/utils.js');
               }
+              changeCountry(scope.country);
               return watchOnce();
             });
           });
-          scope.$watch('country', function(newValue) {
-            if (newValue !== null && newValue !== void 0 && newValue !== '') {
-              if (options.onlyCountries && options.onlyCountries.indexOf(newValue.toLowerCase()) === -1) {
-                return;
-              }
-              return element.intlTelInput("selectCountry", newValue);
-            }
-          });
+          scope.$watch('country', changeCountry);
           ctrl.$formatters.push(function(value) {
             if (!value) {
               return value;
