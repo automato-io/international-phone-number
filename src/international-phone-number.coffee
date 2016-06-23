@@ -84,7 +84,10 @@ angular.module("internationalPhoneNumber", [])
 
     scope.$watch('country', (newValue) ->
         if newValue != null && newValue != undefined && newValue != ''
-            element.intlTelInput("selectCountry", newValue)
+          if options.onlyCountries && options.onlyCountries.indexOf(newValue.toLowerCase()) == -1
+            return
+
+          element.intlTelInput("selectCountry", newValue)
     )
 
     ctrl.$formatters.push (value) ->
@@ -92,13 +95,18 @@ angular.module("internationalPhoneNumber", [])
         return value
 
       element.intlTelInput 'setNumber', value
-      element.val()
+      value
 
     ctrl.$parsers.push (value) ->
+      value = element.intlTelInput 'getNumber'
+
       if !value
         return value
 
-      value.replace(/[^\d]/g, '')
+      selectedCountryData = element.intlTelInput "getSelectedCountryData"
+      prefixLength = selectedCountryData.dialCode.length + 1
+
+      value.substring(0, prefixLength) + ' ' + value.substring(prefixLength)
 
     ctrl.$validators.internationalPhoneNumber = (value) ->
       selectedCountry = element.intlTelInput('getSelectedCountryData')

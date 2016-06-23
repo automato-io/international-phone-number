@@ -77,6 +77,9 @@
           });
           scope.$watch('country', function(newValue) {
             if (newValue !== null && newValue !== void 0 && newValue !== '') {
+              if (options.onlyCountries && options.onlyCountries.indexOf(newValue.toLowerCase()) === -1) {
+                return;
+              }
               return element.intlTelInput("selectCountry", newValue);
             }
           });
@@ -85,13 +88,17 @@
               return value;
             }
             element.intlTelInput('setNumber', value);
-            return element.val();
+            return value;
           });
           ctrl.$parsers.push(function(value) {
+            var prefixLength, selectedCountryData;
+            value = element.intlTelInput('getNumber');
             if (!value) {
               return value;
             }
-            return value.replace(/[^\d]/g, '');
+            selectedCountryData = element.intlTelInput("getSelectedCountryData");
+            prefixLength = selectedCountryData.dialCode.length + 1;
+            return value.substring(0, prefixLength) + ' ' + value.substring(prefixLength);
           });
           ctrl.$validators.internationalPhoneNumber = function(value) {
             var selectedCountry;
