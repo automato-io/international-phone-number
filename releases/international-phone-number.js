@@ -80,7 +80,9 @@
               if (!(options.skipUtilScriptDownload || attrs.skipUtilScriptDownload !== void 0 || options.utilsScript)) {
                 element.intlTelInput('loadUtils', '/bower_components/intl-tel-input/lib/libphonenumber/build/utils.js');
               }
-              changeCountry(scope.country);
+              if (newValue === null || newValue === void 0) {
+                changeCountry(scope.country);
+              }
               return watchOnce();
             });
           });
@@ -111,7 +113,9 @@
             return element.intlTelInput("isValidNumber");
           };
           element.on('blur keyup change', function(event) {
-            return scope.$apply(read);
+            return $timeout(function() {
+              return read();
+            });
           });
           return element.on('$destroy', function() {
             element.intlTelInput('destroy');

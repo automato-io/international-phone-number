@@ -85,7 +85,9 @@ angular.module("internationalPhoneNumber", [])
         unless options.skipUtilScriptDownload || attrs.skipUtilScriptDownload != undefined || options.utilsScript
           element.intlTelInput('loadUtils', '/bower_components/intl-tel-input/lib/libphonenumber/build/utils.js')
 
-        changeCountry(scope.country)
+        if newValue == null || newValue == undefined
+          changeCountry scope.country
+
         watchOnce()
 
     )
@@ -119,7 +121,7 @@ angular.module("internationalPhoneNumber", [])
       element.intlTelInput("isValidNumber")
 
     element.on 'blur keyup change', (event) ->
-      scope.$apply read
+      $timeout () -> read()
 
     element.on '$destroy', () ->
       element.intlTelInput('destroy');
